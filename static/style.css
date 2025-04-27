@@ -1,0 +1,162 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Font and background setup */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f1f1f1;
+    color: #333;
+}
+
+/* Header style */
+header {
+    background-color: #008080;
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    font-size: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Navigation bar style */
+nav {
+    background-color: #333;
+}
+
+nav ul {
+    display: flex;
+    justify-content: center;
+    list-style-type: none;
+    padding: 0;
+}
+
+nav ul li {
+    padding: 15px 25px;
+    color: white;
+    cursor: pointer;
+    text-align: center;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+nav ul li:hover {
+    background-color: #006666;
+    transform: scale(1.05);
+}
+
+/* Main content area */
+main {
+    padding: 30px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+/* Content section toggling */
+.content-section {
+    display: none;
+}
+
+/* Section headers */
+h2 {
+    color: #333;
+    font-size: 26px;
+    margin-bottom: 20px;
+}
+
+/* Table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+table th, table td {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    font-size: 16px;
+}
+
+table th {
+    background-color: #008080;
+    color: white;
+}
+
+table tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Input and select elements */
+input, select {
+    padding: 12px;
+    margin: 12px 0;
+    width: 100%;
+    max-width: 250px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    font-size: 16px;
+    transition: border 0.3s;
+}
+
+input:focus, select:focus {
+    border-color: #008080;
+    outline: none;
+    background-color: #fff;
+}
+
+/* Button styles */
+button {
+    padding: 12px 20px;
+    background-color: #008080;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+    background-color: #006666;
+    transform: scale(1.05);
+}
+
+/* Form and layout adjustments */
+form {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    margin: auto;
+}
+
+input, select, button {
+    max-width: 100%;
+}
+
+@media (max-width: 768px) {
+    main {
+        padding: 20px;
+    }
+
+    nav ul li {
+        padding: 12px 18px;
+    }
+
+    table th, table td {
+        font-size: 14px;
+    }
+
+    h2 {
+        font-size: 22px;
+    }
+}

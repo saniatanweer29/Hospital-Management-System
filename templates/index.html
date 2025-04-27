@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hospital Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>🏥 Welcome to SM Hospital</h1>
+        <p>Your Health, Our Priority</p>
+    </header>
+
+    <nav>
+        <ul>
+            <li onclick="showSection('doctors')">Doctors</li>
+            <li onclick="showSection('patients')">Patients</li>
+            <li onclick="showSection('rooms')">Rooms</li>
+            <li onclick="showSection('pharmacy')">Pharmacy</li>
+            <li onclick="showSection('bills')">Bill Status</li>
+        </ul>
+    </nav>
+
+    <main>
+        <!-- Doctors Section -->
+        <section id="doctors" class="content-section">
+            <h2>Doctors</h2>
+            <p>Meet our specialized team of experienced doctors.</p>
+            <table id="doctorsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Qualification</th>
+                        <th>Department</th>
+                    </tr>
+                </thead>
+                <tbody id="doctorsList"></tbody>
+            </table>
+        </section>
+
+        <!-- Patients Section -->
+        <section id="patients" class="content-section" style="display: none;">
+            <h2>Patients</h2>
+            <p>View patient records and admission details.</p>
+            <h3>Add New Patient</h3>
+            <form id="addPatientForm">
+                <input type="text" id="pname" placeholder="Name" required>
+                <select id="pgender" required>
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+                <input type="date" id="pdob" required>
+                <input type="text" id="pmobile" placeholder="Mobile Number" required>
+                <button type="button" onclick="addPatient()">Add Patient</button>
+            </form>
+            <table id="patientsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Gender</th>
+                        <th>Date of Birth</th>
+                        <th>Mobile No</th>
+                    </tr>
+                </thead>
+                <tbody id="patientsList"></tbody>
+            </table>
+        </section>
+
+        <!-- Rooms Section -->
+        <section id="rooms" class="content-section" style="display: none;">
+            <h2>Rooms</h2>
+            <p>Check room availability and types.</p>
+            <h2>Add Room</h2>
+            <form id="add-room-form">
+                <label for="room_no">Room No:</label>
+                <input type="text" id="room_no" name="room_no" required><br>
+
+                <label for="room_type">Room Type:</label>
+                <input type="text" id="room_type" name="room_type" required><br>
+
+                <label for="status">Status:</label>
+                <input type="text" id="status" name="status" required><br>
+
+                <label for="price">Price:</label>
+                <input type="text" id="price" name="price" required><br>
+
+                <label for="facilities">Facilities:</label>
+                <textarea id="facilities" name="facilities" required></textarea><br>
+
+                <button type="button" onclick="addRoom()">Add Room</button>
+            </form>
+            <table id="roomsTable">
+                <thead>
+                    <tr>
+                        <th>Room No</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Price</th>
+                        <th>Facilities</th>
+                    </tr>
+                </thead>
+                <tbody id="roomsList"></tbody>
+            </table>
+        </section>
+
+        <!-- Pharmacy Section -->
+        <section id="pharmacy" class="content-section" style="display: none;">
+            <h2>Pharmacy</h2>
+            <p>View our pharmacy inventory and prescriptions.</p>
+            <table id="pharmacyTable">
+                <thead>
+                    <tr>
+                        <th>Pharmacy ID</th>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Phone Number</th>
+                    </tr>
+                </thead>
+                <tbody id="pharmacyList"></tbody>
+            </table>
+        </section>
+
+        <!-- Bills Section -->
+        <section id="bills" class="content-section" style="display: none;">
+            <h2>Bill Status</h2>
+            <p>Check and add billing information.</p>
+        
+            <!-- Bill Add Form -->
+            <div class="form-container">
+                <input type="text" id="bill_patient_id" placeholder="Patient ID">
+                <input type="text" id="bill_amount" placeholder="Amount">
+                <input type="text" id="bill_name" placeholder="Name">
+                <button onclick="addBill()">Add Bill</button>
+            </div>
+        
+            <!-- Bill Table -->
+            <table id="billsTable">
+                <thead>
+                    <tr>
+                        <th>Bill ID</th>
+                        <th>Patient ID</th>
+                        <th>Total Amount</th>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody id="billsList"></tbody>
+            </table>
+        </section>
+        
+        
+    </main>
+
+    <script>
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(sec => sec.style.display = 'none');
+            document.getElementById(sectionId).style.display = 'block';
+
+            if (sectionId === 'doctors') {
+                fetchDoctors();
+            } else if (sectionId === 'patients') {
+                fetchPatients();
+            } else if (sectionId === 'rooms') {
+                fetchRooms();
+            } else if (sectionId === 'pharmacy') {
+                fetchPharmacy();
+            } else if (sectionId === 'bills') {
+                fetchBills();
+            }
+        }
+
+        function fetchDoctors() {
+            fetch('/api/doctors')
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.getElementById('doctorsList');
+                    tbody.innerHTML = '';
+                    data.forEach(doc => {
+                        const row = `<tr>
+                            <td>${doc.doctor_id}</td>
+                            <td>${doc.name}</td>
+                            <td>${doc.qualification}</td>
+                            <td>${doc.department}</td>
+                        </tr>`;
+                        tbody.innerHTML += row;
+                    });
+                })
+                .catch(error => console.error('Error fetching doctors:', error));
+        }
+
+        function fetchPatients() {
+            fetch('/api/patients')
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.getElementById('patientsList');
+                    tbody.innerHTML = '';
+                    data.forEach(patient => {
+                        const row = `<tr>
+                            <td>${patient.patient_id}</td>
+                            <td>${patient.name}</td>
+                            <td>${patient.gender}</td>
+                            <td>${patient.dob}</td>
+                            <td>${patient.mobile_no}</td>
+                        </tr>`;
+                        tbody.innerHTML += row;
+                    });
+                })
+                .catch(error => console.error('Error fetching patients:', error));
+        }
+
+        function fetchRooms() {
+            fetch('/api/rooms')
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.getElementById('roomsList');
+                    tbody.innerHTML = '';
+                    data.forEach(room => {
+                        const row = `<tr>
+                            <td>${room.room_no}</td>
+                            <td>${room.room_type}</td>
+                            <td>${room.status}</td>
+                            <td>₹${parseFloat(room.price).toFixed(2)}</td>
+                            <td>${room.facilities}</td>
+                        </tr>`;
+                        tbody.innerHTML += row;
+                    });
+                })
+                .catch(error => console.error('Error fetching rooms:', error));
+        }
+
+        function fetchPharmacy() {
+            fetch('/api/pharmacy')
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.getElementById('pharmacyList');
+                    tbody.innerHTML = '';
+                    data.forEach(pharmacy => {
+                        const row = `<tr>
+                            <td>${pharmacy.pharmacy_id}</td>
+                            <td>${pharmacy.name}</td>
+                            <td>${pharmacy.location}</td>
+                            <td>${pharmacy.phone_number}</td>
+                        </tr>`;
+                        tbody.innerHTML += row;
+                    });
+                })
+                .catch(error => console.error('Error fetching pharmacy data:', error));
+        }
+
+        function fetchBills() {
+            fetch('/api/bills')
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.getElementById('billsList');
+                    tbody.innerHTML = '';
+                    data.forEach(bill => {
+                        const row = `<tr>
+                            <td>${bill.bill_id}</td>
+                            <td>${bill.patient_id}</td>
+                            <td>₹${parseFloat(bill.amount).toFixed(2)}</td>
+                            <td>${bill.name}</td>
+                        </tr>`;
+                        tbody.innerHTML += row;
+                    });
+                })
+                .catch(error => console.error('Error fetching bills:', error));
+        }
+
+        function addPatient() {
+            const pname = document.getElementById('pname').value;
+            const pgender = document.getElementById('pgender').value;
+            const pdob = document.getElementById('pdob').value;
+            const pmobile = document.getElementById('pmobile').value;
+
+            if (!pname || !pgender || !pdob || !pmobile) {
+                alert('All fields are required.');
+                return;
+            }
+
+            const patientData = {
+                name: pname,
+                gender: pgender,
+                dob: pdob,
+                mobile: pmobile
+            };
+
+            fetch('/api/patients/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(patientData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                    document.getElementById('addPatientForm').reset();
+                    fetchPatients(); // Refresh patient list
+                } else {
+                    alert('Error adding patient');
+                }
+            })
+            .catch(error => {
+                console.error('Error adding patient:', error);
+                alert('Error adding patient');
+            });
+        }
+
+        // Add a new room to the database via the Flask API
+        function addRoom() {
+            const roomNo = document.getElementById('room_no').value;
+            const roomType = document.getElementById('room_type').value;
+            const status = document.getElementById('status').value;
+            const price = document.getElementById('price').value;
+            const facilities = document.getElementById('facilities').value;
+
+            // Validate if all fields are filled
+            if (!roomNo || !roomType || !status || !price || !facilities) {
+                alert('All fields are required.');
+                return;
+            }
+
+            const roomData = {
+                room_no: roomNo,
+                room_type: roomType,
+                status: status,
+                price: price,
+                facilities: facilities
+            };
+
+            fetch('/api/rooms/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(roomData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message); // Alert the user about the result
+                    document.getElementById('add-room-form').reset(); // Reset the form
+                    fetchRooms(); // Refresh room list
+                } else {
+                    alert('Error adding room');
+                }
+            })
+            .catch(error => {
+                console.error('Error adding room:', error);
+                alert('Error adding room');
+            });
+        }
+
+        // Show Add Bill form when 'Add Bill' button is clicked
+        function showAddBillForm() {
+            document.getElementById('addBillSection').style.display = 'block'; // Display Add Bill form
+            document.getElementById('bills').style.display = 'none'; // Hide Bill Status section
+        }
+
+// Add Bill function - handles form submission
+        document.getElementById('addBillForm').addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent form from refreshing the page
+
+            const patientId = document.getElementById('patientId').value;
+            const amount = document.getElementById('amount').value;
+            const patientName = document.getElementById('patientName').value;
+
+            // Validate form fields
+            if (!patientId || !amount || !patientName) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('patientId', patientId);
+            formData.append('amount', amount);
+            formData.append('patientName', patientName);
+
+            // Send data to Flask backend
+            fetch('/add_bill', {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Bill added successfully!');
+                        loadBills(); // Reload bill status table
+                        document.getElementById('addBillForm').reset(); // Reset form
+                        document.getElementById('addBillSection').style.display = 'none'; // Hide form after adding
+                        document.getElementById('bills').style.display = 'block'; // Show bill status
+                    } else {
+                        alert('Failed to add bill!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error occurred while adding the bill.');
+                });
+        });
+
+        // Function to load and display bills in the table
+        function loadBills() {
+    fetch('/api/bills')
+        .then(response => response.json())
+        .then(data => {
+            const billsList = document.getElementById('billsList');
+            billsList.innerHTML = '';
+            data.forEach(bill => {
+                const row = `
+                    <tr>
+                        <td>${bill.bill_id}</td>
+                        <td>${bill.patient_id}</td>
+                        <td>${bill.amount}</td>
+                        <td>${bill.name}</td>
+                    </tr>
+                `;
+                billsList.innerHTML += row;
+            });
+        });
+}
+
+function addBill() {
+    const patient_id = document.getElementById('bill_patient_id').value;
+    const amount = document.getElementById('bill_amount').value;
+    const name = document.getElementById('bill_name').value;
+
+    if (!patient_id || !amount || !name) {
+        alert("All fields are required!");
+        return;
+    }
+
+    fetch('/api/bills/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ patient_id, amount, name })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message || data.error);
+        loadBills();
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+
+        // Call the loadBills function when the page loads to display the existing bills
+        window.onload = loadBills;
+        // Load doctors by default
+        showSection('doctors');
+    </script>
+</body>
+<footer>
+    <p>&copy; 2025 SM Hospital. All rights reserved.</p>
+</html>
